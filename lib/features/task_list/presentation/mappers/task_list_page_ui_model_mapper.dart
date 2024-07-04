@@ -13,10 +13,6 @@ class TaskListPageUiModelMapper implements Function0<TaskListPageUiModel> {
   static const titleLabel = 'Check list';
   @visibleForTesting
   static const descriptionLabel = 'Keep your task under control';
-  @visibleForTesting
-  static const logInButtonLabel = 'Log in';
-  @visibleForTesting
-  static const signInButtonLabel = 'Sign In';
 
   @override
   TaskListPageUiModel call() {
