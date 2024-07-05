@@ -11,6 +11,8 @@ class TaskListPageCubit extends Cubit<TaskListPageState> with LoggerMixin {
   TaskListPageCubit(this._taskListPageMapper) : super(TaskListPageInitialState());
 
   Future<void> initTaskListPage() async {
+    emit(TaskListPageLoadingState());
+    await Future.delayed(const Duration(seconds: 1));
     emit(TaskListPageSuccessState(pageUiModel: _taskListPageMapper()));
   }
 }

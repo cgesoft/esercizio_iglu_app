@@ -15,7 +15,7 @@ class TaskListPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(body: _stateToBuilder(context));
+    return _stateToBuilder(context);
   }
 
   Widget _stateToBuilder(BuildContext context) {
