@@ -3,11 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/di/app_injection_module.dart';
+import '../../../../core/util/util_classes.dart';
 import '../../../../core/widgets/failure_widget.dart';
 import '../../../../core/widgets/loading_widget.dart';
 import '../blocs/task_list_page_cubit.dart';
 import '../blocs/task_list_page_state.dart';
+import '../entities/task_modal_ui_model.dart';
 import '../widgets/task_list_page_widget.dart';
+import '../widgets/task_modal_widget.dart';
 
 @RoutePage()
 class TaskListPage extends StatelessWidget {
@@ -15,26 +18,64 @@ class TaskListPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(body: _stateToBuilder(context));
+    return _stateToBuilder(context);
   }
 
   Widget _stateToBuilder(BuildContext context) {
     return BlocProvider<TaskListPageCubit>(
-        create: (context) => injector<TaskListPageCubit>(),
-        child: BlocConsumer<TaskListPageCubit, TaskListPageState>(
-          buildWhen: (_, currentState) {
-            //if (currentState is TaskListPageShowNotificationDialogState) {
-            //  return false;
-            //}
-            return true;
+      create: (context) => injector<TaskListPageCubit>(),
+      child: BlocConsumer<TaskListPageCubit, TaskListPageState>(
+        buildWhen: (_, currentState) {
+          if (currentState is ShowEditTaskModalState ||
+              currentState is ShowCreateTaskModalState ||
+              currentState is ShowSuccessTaskModalState ||
+              currentState is ShowFailureTaskModalState) {
+            return false;
+          }
+          return true;
+        },
+        listener: (context, currentState) {
+          if (currentState is ShowEditTaskModalState ||
+              currentState is ShowCreateTaskModalState ||
+              currentState is ShowSuccessTaskModalState ||
+              currentState is ShowFailureTaskModalState) {
+            return _stateListener(context, currentState);
+          }
+        },
+        builder: (context, state) => _stateToWidget(context, state),
+      ),
+    );
+  }
+
+  void _stateListener(BuildContext context, TaskListPageState state) {
+    switch (state) {
+      case ShowEditTaskModalState():
+        _showTaskEditModal(context, state.uiModel);
+      case ShowCreateTaskModalState():
+        _showTaskEditModal(context, state.uiModel);
+      case ShowSuccessTaskModalState():
+        Navigator.of(context).pop();
+        _showToastMessage(context, state.message);
+      case ShowFailureTaskModalState():
+        Navigator.of(context).pop();
+        _showToastMessage(context, state.message);
+      default:
+    }
+  }
+
+  _showTaskEditModal(BuildContext context, TaskModalUiModel editTaskModalUiModel) {
+    showBottomSheetModal(
+      context,
+      isDismissible: false,
+      TaskModalWidget(
+          uiModel: editTaskModalUiModel,
+          onSavePressed: (task) {
+            context.read<TaskListPageCubit>().saveTask(task);
           },
-          listener: (context, state) {
-            //  if (state is TaskListPageShowNotificationDialogState) {
-            //    return _stateListener(context, state);
-            //  }
-          },
-          builder: (context, state) => _stateToWidget(context, state),
-        ));
+          onDeletePressed: (task) {
+            context.read<TaskListPageCubit>().deleteTask(task);
+          }),
+    );
   }
 
   Widget _stateToWidget(BuildContext context, TaskListPageState state) {
@@ -53,5 +94,11 @@ class TaskListPage extends StatelessWidget {
 
   void _initTaskListPage(BuildContext context) {
     context.read<TaskListPageCubit>().initTaskListPage();
+  }
+
+  void _showToastMessage(BuildContext context, String message) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text(message),
+    ));
   }
 }
