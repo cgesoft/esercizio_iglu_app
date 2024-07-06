@@ -20,11 +20,13 @@ void showBottomSheetModal(BuildContext context, Widget modalChild,
         constraints: BoxConstraints(
           maxHeight: MediaQuery.of(context).size.height * 0.85,
         ),
-        child: BottomSheetModalWidget(
-          isDismissible: isDismissible,
-          showCloseButton: showCloseButton,
-          onClosePressed: onClosePressed,
-          child: modalChild,
-        ),
+        child: Padding(
+            padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+            child: BottomSheetModalWidget(
+              isDismissible: isDismissible,
+              showCloseButton: showCloseButton,
+              onClosePressed: onClosePressed,
+              child: modalChild,
+            )),
       ),
     );
