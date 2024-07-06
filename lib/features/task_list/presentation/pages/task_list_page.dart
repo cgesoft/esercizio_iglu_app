@@ -26,13 +26,19 @@ class TaskListPage extends StatelessWidget {
       create: (context) => injector<TaskListPageCubit>(),
       child: BlocConsumer<TaskListPageCubit, TaskListPageState>(
         buildWhen: (_, currentState) {
-          if (currentState is ShowEditTaskModalState || currentState is ShowCreateTaskModalState) {
+          if (currentState is ShowEditTaskModalState ||
+              currentState is ShowCreateTaskModalState ||
+              currentState is ShowSuccessTaskModalState ||
+              currentState is ShowFailureTaskModalState) {
             return false;
           }
           return true;
         },
         listener: (context, currentState) {
-          if (currentState is ShowEditTaskModalState || currentState is ShowCreateTaskModalState) {
+          if (currentState is ShowEditTaskModalState ||
+              currentState is ShowCreateTaskModalState ||
+              currentState is ShowSuccessTaskModalState ||
+              currentState is ShowFailureTaskModalState) {
             return _stateListener(context, currentState);
           }
         },
@@ -47,6 +53,12 @@ class TaskListPage extends StatelessWidget {
         _showTaskEditModal(context, state.uiModel);
       case ShowCreateTaskModalState():
         _showTaskEditModal(context, state.uiModel);
+      case ShowSuccessTaskModalState():
+        Navigator.of(context).pop();
+        _showToastMessage(context, state.message);
+      case ShowFailureTaskModalState():
+        Navigator.of(context).pop();
+        _showToastMessage(context, state.message);
       default:
     }
   }
@@ -82,5 +94,11 @@ class TaskListPage extends StatelessWidget {
 
   void _initTaskListPage(BuildContext context) {
     context.read<TaskListPageCubit>().initTaskListPage();
+  }
+
+  void _showToastMessage(BuildContext context, String message) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text(message),
+    ));
   }
 }

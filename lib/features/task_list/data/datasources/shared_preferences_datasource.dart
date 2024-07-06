@@ -9,6 +9,7 @@ abstract class ISharedPreferencesDatasource {
   Future<void> setStringList(String key, List<String> items);
   Future<void> setString(String key, String value);
   Future<void> setBool(String key, bool value);
+  Future<void> remove(String key);
 }
 
 class SharedPreferencesDatasource implements ISharedPreferencesDatasource {
@@ -69,6 +70,16 @@ class SharedPreferencesDatasource implements ISharedPreferencesDatasource {
     try {
       final SharedPreferences prefs = await SharedPreferences.getInstance();
       prefs.setBool(key, value);
+    } catch (e) {
+      throw ServerFailure(e.toString());
+    }
+  }
+
+  @override
+  Future<void> remove(String key) async {
+    try {
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      prefs.remove(key);
     } catch (e) {
       throw ServerFailure(e.toString());
     }

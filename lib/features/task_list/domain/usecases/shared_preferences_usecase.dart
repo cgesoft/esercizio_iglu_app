@@ -11,7 +11,7 @@ class SharedPreferencesUseCase with LoggerMixin {
 
   SharedPreferencesUseCase(this._sharedPreferencesRepository);
 
-  Future<Either<Failure, List<TaskItemUiModel>>> getTaskModels(String taskListKey) async {
+  Future<Either<Failure, List<TaskItemUiModel>>> getTasks(String taskListKey) async {
     try {
       const taskTitleKey = SharedPreferenceKeyConstants.taskTitleKey;
       const taskDescKey = SharedPreferenceKeyConstants.taskDescKey;
@@ -39,21 +39,49 @@ class SharedPreferencesUseCase with LoggerMixin {
     }
   }
 
-  Future<Either<Failure, bool>> setTaskModel(String taskListKey, TaskItemUiModel task) async {
+  Future<Either<Failure, bool>> setTask(String taskListKey, TaskItemUiModel task) async {
     try {
       const taskTitleKey = SharedPreferenceKeyConstants.taskTitleKey;
       const taskDescKey = SharedPreferenceKeyConstants.taskDescKey;
       const taskStatusKey = SharedPreferenceKeyConstants.taskStatusKey;
       final taskId = task.id;
-      var taskList = await _sharedPreferencesRepository.getTaskListIds(taskListKey);
-      taskList.add(taskId);
+      if (task.title.isNotEmpty) {
+        var taskList = await _sharedPreferencesRepository.getTaskListIds(taskListKey);
+        if (taskList.contains(task.id) == false) {
+          taskList.add(taskId);
+        }
+        await _sharedPreferencesRepository.setTaskIdsList(taskListKey, taskList);
+        await _sharedPreferencesRepository.setTitle('$taskTitleKey$taskId', task.title);
+        await _sharedPreferencesRepository.setDescription('$taskDescKey$taskId', task.description);
+        await _sharedPreferencesRepository.setStatus(
+            '$taskStatusKey$taskId', task.status == TaskStatus.completed);
+        return Either.right(true);
+      } else {
+        return Either.right(false);
+      }
+    } catch (error) {
+      log.error(error.toString());
+      return Left(ServerFailure(error.toString()));
+    }
+  }
 
-      await _sharedPreferencesRepository.setTaskIdsList(taskListKey, taskList);
-      await _sharedPreferencesRepository.setTitle(taskTitleKey, task.title);
-      await _sharedPreferencesRepository.setDescription(taskDescKey, task.description);
-      await _sharedPreferencesRepository.setStatus(
-          taskStatusKey, task.status == TaskStatus.completed);
-      return Either.right(true);
+  Future<Either<Failure, bool>> deleteTask(String taskListKey, TaskItemUiModel task) async {
+    try {
+      const taskTitleKey = SharedPreferenceKeyConstants.taskTitleKey;
+      const taskDescKey = SharedPreferenceKeyConstants.taskDescKey;
+      const taskStatusKey = SharedPreferenceKeyConstants.taskStatusKey;
+      final taskId = task.id;
+      if (task.title.isNotEmpty) {
+        var taskList = await _sharedPreferencesRepository.getTaskListIds(taskListKey);
+        taskList.remove(taskId);
+        await _sharedPreferencesRepository.setTaskIdsList(taskListKey, taskList);
+        await _sharedPreferencesRepository.remove('$taskTitleKey$taskId');
+        await _sharedPreferencesRepository.remove('$taskDescKey$taskId');
+        await _sharedPreferencesRepository.remove('$taskStatusKey$taskId');
+        return Either.right(true);
+      } else {
+        return Either.right(false);
+      }
     } catch (error) {
       log.error(error.toString());
       return Left(ServerFailure(error.toString()));

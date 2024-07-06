@@ -22,7 +22,7 @@ class TaskListPageUiModelMapper implements Function1<List<TaskItemUiModel>, Task
       logoPath: logoPath,
       titleLabel: titleLabel,
       descriptionLabel: descriptionLabel,
-      areTaskAvailable: true,
+      areTaskAvailable: taskModels.isNotEmpty,
       noTaskInformativeLabel: noTaskInformativeLabel,
       tasks: taskModels,
     );

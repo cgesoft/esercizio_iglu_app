@@ -54,4 +54,9 @@ class SharedPreferencesRepository implements ISharedPreferencesRepository {
   Future<void> setStatus(String key, bool value) async {
     await _sharedPreferencesDatasource.setBool(key, value);
   }
+
+  @override
+  Future<void> remove(String key) async {
+    await _sharedPreferencesDatasource.remove(key);
+  }
 }

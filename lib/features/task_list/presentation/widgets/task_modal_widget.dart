@@ -8,7 +8,7 @@ import '../entities/task_modal_ui_model.dart';
 class TaskModalWidget extends StatelessWidget {
   final TaskModalUiModel uiModel;
   final Function(TaskItemUiModel task) onSavePressed;
-  final Function(TaskItemUiModel? task) onDeletePressed;
+  final Function(TaskItemUiModel task) onDeletePressed;
 
   const TaskModalWidget(
       {required this.uiModel, required this.onSavePressed, required this.onDeletePressed, Key? key})
@@ -34,10 +34,11 @@ class TaskModalWidget extends StatelessWidget {
   }
 
   _buildFormContainer() {
+    var task = uiModel.task;
     var _form = GlobalKey<FormState>();
-    var _titleEditBox = TextEditingController()..text = uiModel.task?.title ?? '';
-    var _descriptionEditBox = TextEditingController()..text = uiModel.task?.description ?? '';
-    TaskStatus? _dropdownButtonValue = uiModel.task?.status ?? TaskStatus.toDo;
+    var _titleEditBox = TextEditingController()..text = task?.title ?? '';
+    var _descriptionEditBox = TextEditingController()..text = task?.description ?? '';
+    TaskStatus? _dropdownButtonValue = task?.status ?? TaskStatus.toDo;
     return Form(
       key: _form,
       autovalidateMode: AutovalidateMode.always,
@@ -106,7 +107,7 @@ class TaskModalWidget extends StatelessWidget {
                     var _formCurrentState = _form.currentState;
                     if (_formCurrentState != null && _formCurrentState.validate()) {
                       onSavePressed(TaskItemUiModel(
-                          id: const Uuid().v4(),
+                          id: task?.id ?? const Uuid().v4(),
                           title: _titleEditBox.text,
                           description: _descriptionEditBox.text,
                           status: _dropdownButtonValue ?? TaskStatus.toDo));
@@ -125,7 +126,7 @@ class TaskModalWidget extends StatelessWidget {
                     backgroundColor: Colors.red,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
                   ),
-                  onPressed: () => onDeletePressed(uiModel.task),
+                  onPressed: task != null ? () => onDeletePressed(task) : null,
                 ),
               ),
             ]),

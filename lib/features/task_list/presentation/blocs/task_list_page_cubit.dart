@@ -23,7 +23,7 @@ class TaskListPageCubit extends Cubit<TaskListPageState> with LoggerMixin {
     emit(TaskListPageLoadingState());
     try {
       var taskModelsOrError =
-          await _sharedPreferencesUseCase.getTaskModels(SharedPreferenceKeyConstants.taskListKey);
+          await _sharedPreferencesUseCase.getTasks(SharedPreferenceKeyConstants.taskListKey);
       List<TaskItemUiModel> taskModels = taskModelsOrError.match(
         (error) => throw Exception(error.message),
         (taskModels) => taskModels,
@@ -43,27 +43,42 @@ class TaskListPageCubit extends Cubit<TaskListPageState> with LoggerMixin {
   Future<void> saveTask(TaskItemUiModel task) async {
     emit(TaskListPageLoadingState());
     try {
-      var successOrError = await _sharedPreferencesUseCase.setTaskModel(
-          SharedPreferenceKeyConstants.taskListKey, task);
+      var successOrError =
+          await _sharedPreferencesUseCase.setTask(SharedPreferenceKeyConstants.taskListKey, task);
       bool success = successOrError.match(
         (error) => throw Exception(error.message),
         (success) => success,
       );
       if (success) {
-        emit(ShowSuccessTaskModalState());
+        emit(ShowSuccessTaskModalState(message: 'Task added successfully.'));
       } else {
-        emit(ShowFailureTaskModalState());
+        emit(ShowFailureTaskModalState(message: 'Something went wrong..'));
       }
+      emit(TaskListPageInitialState());
     } catch (e) {
       log.error(e.toString());
       emit(TaskListPageErrorState(message: e.toString()));
     }
   }
 
-  Future<void> deleteTask(TaskItemUiModel? task) async {
-    //emit(TaskListPageLoadingState());
-    await Future.delayed(const Duration(seconds: 1));
-    //emit(TaskListPageSuccessState(pageUiModel: _taskListPageMapper()));
+  Future<void> deleteTask(TaskItemUiModel task) async {
+    try {
+      var successOrError = await _sharedPreferencesUseCase.deleteTask(
+          SharedPreferenceKeyConstants.taskListKey, task);
+      bool success = successOrError.match(
+        (error) => throw Exception(error.message),
+        (success) => success,
+      );
+      if (success) {
+        emit(ShowSuccessTaskModalState(message: 'Task removed successfully.'));
+      } else {
+        emit(ShowFailureTaskModalState(message: 'Something went wrong..'));
+      }
+      emit(TaskListPageInitialState());
+    } catch (e) {
+      log.error(e.toString());
+      emit(TaskListPageErrorState(message: e.toString()));
+    }
   }
 
   void editTask(TaskItemUiModel taskUiModel) {

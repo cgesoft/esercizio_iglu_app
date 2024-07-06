@@ -28,9 +28,11 @@ class ShowCreateTaskModalState extends TaskListPageState {
 }
 
 class ShowSuccessTaskModalState extends TaskListPageState {
-  ShowSuccessTaskModalState();
+  final String message;
+  ShowSuccessTaskModalState({required this.message});
 }
 
 class ShowFailureTaskModalState extends TaskListPageState {
-  ShowFailureTaskModalState();
+  final String message;
+  ShowFailureTaskModalState({required this.message});
 }

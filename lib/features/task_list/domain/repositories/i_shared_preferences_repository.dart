@@ -9,4 +9,5 @@ abstract class ISharedPreferencesRepository {
   Future<void> setTitle(String key, String value);
   Future<void> setDescription(String key, String value);
   Future<void> setStatus(String key, bool value);
+  Future<void> remove(String key);
 }
