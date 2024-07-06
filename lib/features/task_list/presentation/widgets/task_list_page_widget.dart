@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 
+import '../blocs/task_list_page_cubit.dart';
 import '../entities/task_list_page_ui_model.dart';
 
 class TaskListPageWidget extends StatelessWidget {
@@ -23,20 +25,13 @@ class TaskListPageWidget extends StatelessWidget {
               _buildLogo(shorterScreenSize),
               _buildTitle(),
               _buildDescription(),
-              _buildTaskList(shorterScreenSize),
+              _buildTaskList(context, shorterScreenSize),
               //_buildAddTaskButton(),
             ],
           ),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // Add your onPressed logic here
-          print('Floating Action Button Pressed');
-        },
-        child: const Icon(Icons.add),
-        backgroundColor: Colors.blue,
-      ),
+      floatingActionButton: _buildFloatingActionButton(context),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
@@ -82,7 +77,7 @@ class TaskListPageWidget extends StatelessWidget {
     );
   }
 
-  _buildTaskList(double shorterScreenSize) {
+  _buildTaskList(BuildContext context, double shorterScreenSize) {
     return Expanded(
         child: Padding(
             padding: EdgeInsets.only(top: 10, bottom: shorterScreenSize / 6),
@@ -100,7 +95,7 @@ class TaskListPageWidget extends StatelessWidget {
                   ),
                 ],
               ),
-              child: pageUiModel.areTaskAvailable ? _buildTaskItems() : _buildNoTaskToShow(),
+              child: pageUiModel.areTaskAvailable ? _buildTaskItems(context) : _buildNoTaskToShow(),
             )));
   }
 
@@ -113,18 +108,18 @@ class TaskListPageWidget extends StatelessWidget {
     );
   }
 
-  _buildTaskItems() {
+  _buildTaskItems(BuildContext context) {
     return ListView.separated(
       itemCount: pageUiModel.tasks.length,
       itemBuilder: (context, index) {
         final taskItem = pageUiModel.tasks[index];
-        return _buildTaskItem(taskItem);
+        return _buildTaskItem(context, taskItem);
       },
       separatorBuilder: (BuildContext context, int index) => const Divider(),
     );
   }
 
-  _buildTaskItem(TaskItemModel taskItem) {
+  _buildTaskItem(BuildContext context, TaskItemUiModel taskItem) {
     return Material(
       clipBehavior: Clip.hardEdge,
       color: Colors.transparent,
@@ -139,31 +134,41 @@ class TaskListPageWidget extends StatelessWidget {
                   children: <Widget>[
                     Text(
                       taskItem.title,
-                      style: const TextStyle(
-                        fontSize: 18.0,
-                        fontWeight: FontWeight.bold,
-                      ),
+                      style: const TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 8.0),
                     Text(
                       taskItem.description,
-                      style: TextStyle(
-                        fontSize: 14.0,
-                        color: Colors.grey[600],
-                      ),
+                      style: TextStyle(fontSize: 14.0, color: Colors.grey[600]),
                     ),
                   ],
                 ),
               ),
               Checkbox(
-                value: taskItem.isDone,
+                value: taskItem.status == TaskStatus.completed,
                 onChanged: (bool? value) {},
               ),
             ],
           ),
         ),
-        onTap: () {},
+        onTap: () => _onEditTaskPressed(context, taskItem),
       ),
     );
+  }
+
+  _onEditTaskPressed(BuildContext context, TaskItemUiModel taskItem) {
+    context.read<TaskListPageCubit>().editTask(taskItem);
+  }
+
+  _buildFloatingActionButton(BuildContext context) {
+    return FloatingActionButton(
+      onPressed: () => _onCreateTaskPressed(context),
+      child: const Icon(Icons.add, color: Colors.white),
+      backgroundColor: Colors.blue,
+    );
+  }
+
+  _onCreateTaskPressed(BuildContext context) {
+    context.read<TaskListPageCubit>().writeTask();
   }
 }

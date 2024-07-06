@@ -2,7 +2,7 @@ class TaskListPageUiModel {
   final String logoPath;
   final String titleLabel;
   final String descriptionLabel;
-  final List<TaskItemModel> tasks;
+  final List<TaskItemUiModel> tasks;
   final bool areTaskAvailable;
   final String noTaskInformativeLabel;
 
@@ -16,13 +16,17 @@ class TaskListPageUiModel {
   });
 }
 
-class TaskItemModel {
+class TaskItemUiModel {
+  final String id;
   final String title;
   final String description;
-  final bool isDone;
-  const TaskItemModel({
+  final TaskStatus status;
+  const TaskItemUiModel({
+    required this.id,
     required this.title,
     required this.description,
-    required this.isDone,
+    required this.status,
   });
 }
+
+enum TaskStatus { toDo, completed }

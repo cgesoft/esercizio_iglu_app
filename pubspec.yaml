@@ -16,6 +16,11 @@ dependencies:
   auto_route: ^8.2.0
   flutter_svg: ^2.0.10+1
   mocktail: ^1.0.4
+  fpdart: ^1.1.0
+  freezed: ^2.5.2
+  shared_preferences: ^2.2.3
+  uuid: ^4.4.0
+  equatable: ^2.0.5
 
 
 dev_dependencies:
