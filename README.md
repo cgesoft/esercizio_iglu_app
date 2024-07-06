@@ -44,3 +44,15 @@ Aggiungere una funzionalità di ricerca per filtrare i compiti nella lista.
 # Suggerimenti:
 Assicurarsi che l'interfaccia utente sia reattiva e funzionale su diversi
 dispositivi.
+
+
+#Anteprima:
+![image](https://github.com/cgesoft/esercizio_iglu_app/assets/71395843/32bb4fd7-5369-455c-8d8e-5da334797840)
+![image](https://github.com/cgesoft/esercizio_iglu_app/assets/71395843/9e4f8cd5-daf5-4634-a76e-d0ab6e8cd6bc)
+![image](https://github.com/cgesoft/esercizio_iglu_app/assets/71395843/ae0ba4a1-7b47-4caf-9201-b0f4fcd81c75)
+![image](https://github.com/cgesoft/esercizio_iglu_app/assets/71395843/cfec8060-b7c3-49ef-a5f0-6c4737155330)
+![image](https://github.com/cgesoft/esercizio_iglu_app/assets/71395843/3176b7ae-3b07-43e2-9d4c-7fbf9afa8d04)
+
+
+
+
