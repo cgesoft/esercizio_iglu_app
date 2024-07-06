@@ -120,6 +120,7 @@ class TaskListPageWidget extends StatelessWidget {
   }
 
   _buildTaskItem(BuildContext context, TaskItemUiModel taskItem) {
+    var isDone = taskItem.status == TaskStatus.completed;
     return Material(
       clipBehavior: Clip.hardEdge,
       color: Colors.transparent,
@@ -134,18 +135,24 @@ class TaskListPageWidget extends StatelessWidget {
                   children: <Widget>[
                     Text(
                       taskItem.title,
-                      style: const TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                          decoration: isDone ? TextDecoration.lineThrough : null,
+                          fontSize: 18.0,
+                          fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 8.0),
                     Text(
                       taskItem.description,
-                      style: TextStyle(fontSize: 14.0, color: Colors.grey[600]),
+                      style: TextStyle(
+                          decoration: isDone ? TextDecoration.lineThrough : null,
+                          fontSize: 14.0,
+                          color: Colors.grey[600]),
                     ),
                   ],
                 ),
               ),
               Checkbox(
-                value: taskItem.status == TaskStatus.completed,
+                value: isDone,
                 onChanged: (bool? value) {},
               ),
             ],
